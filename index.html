@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>404 Archive — pages that never existed</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Fredoka:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { display: ['Bungee', 'sans-serif'], fun: ['Fredoka', 'sans-serif'], body: ['DM Sans', 'sans-serif'] },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+  .sunset {
+    background: linear-gradient(120deg, #ff6b35, #f72585, #7209b7, #ff9e00, #ff6b35);
+    background-size: 300% 300%;
+    animation: sunsetShift 12s ease infinite;
+  }
+  @keyframes sunsetShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card { transition: transform .2s ease, box-shadow .2s ease; }
+  .card:hover { transform: translateY(-6px) rotate(-1deg); }
+  .pop { animation: pop .4s cubic-bezier(.2,.8,.2,1); }
+  @keyframes pop { 0%{transform:scale(.6) rotate(-8deg);opacity:0} 100%{transform:scale(1) rotate(0);opacity:1} }
+  .floaty { animation: floaty 6s ease-in-out infinite; }
+  @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .wiggle:hover { animation: wiggle .4s ease; }
+  @keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-6deg)} 75%{transform:rotate(6deg)} }
+  .sun {
+    position: fixed; bottom: -60px; right: -60px; width: 220px; height: 220px;
+    background: radial-gradient(circle, #ffe066 0%, #ff9e00 40%, transparent 70%);
+    filter: blur(8px); opacity: .7; pointer-events: none;
+  }
+  .bubble {
+    position: fixed; border-radius: 50%; pointer-events: none; opacity: .35;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0));
+    animation: rise 14s linear infinite;
+  }
+  @keyframes rise { 0%{transform:translateY(100vh) scale(.5)} 100%{transform:translateY(-20vh) scale(1.2)} }
+</style>
+</head>
+<body class="sunset text-slate-900 overflow-x-hidden">
+<div class="sun"></div>
+
+<header class="max-w-5xl mx-auto px-6 pt-12 pb-6 text-center relative z-10">
+  <div class="text-6xl mb-2 floaty">🪦</div>
+  <h1 class="font-display text-5xl md:text-7xl tracking-tight text-white drop-shadow-lg">404 ARCHIVE</h1>
+  <p class="mt-3 text-white/90 text-lg font-fun">a museum of pages that never existed (and never will)</p>
+</header>
+
+<nav class="max-w-5xl mx-auto px-6 flex justify-center gap-3 mb-8 relative z-10">
+  <button id="tabRandom" class="px-5 py-2 rounded-full font-fun font-semibold bg-white/80 hover:bg-white shadow-lg transition wiggle">🎲 Random</button>
+  <button id="tabScroll" class="px-5 py-2 rounded-full font-fun font-semibold bg-white/80 hover:bg-white shadow-lg transition wiggle">📜 Doomscroll</button>
+</nav>
+
+<main class="max-w-5xl mx-auto px-6 pb-20 relative z-10">
+  <section id="viewRandom" class="flex flex-col items-center gap-6">
+    <div id="randomCard" class="pop w-full max-w-2xl rounded-3xl bg-white/70 backdrop-blur border-4 border-white shadow-2xl p-6 min-h-[360px] flex items-center justify-center">
+      <img id="randomImg" class="max-h-[480px] rounded-2xl hidden shadow-lg" alt="" />
+      <div id="noImg" class="font-fun text-xl text-slate-600">drop images into assets/ 📂</div>
+    </div>
+    <button id="btnRandom" class="px-10 py-4 rounded-2xl bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-500 text-white font-fun font-bold text-xl shadow-xl hover:scale-110 transition wiggle">Gimme a 404 🎰</button>
+    <p id="counter" class="text-white/90 font-fun">seen: 0</p>
+  </section>
+
+  <section id="viewScroll" class="hidden">
+    <div id="feed" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+    <p id="feedEnd" class="text-center text-white/90 mt-8 font-fun">keep scrolling… 👇</p>
+  </section>
+</main>
+
+<script>
+const ASSET_URLS = [];
+let seen = 0;
+let feedIndex = 0;
+const MAX_FEED = 600;
+
+const $ = (id) => document.getElementById(id);
+
+function randomImageUrl() {
+  if (!ASSET_URLS.length) return null;
+  return ASSET_URLS[Math.floor(Math.random() * ASSET_URLS.length)];
+}
+
+function showRandom() {
+  const card = $("randomCard");
+  card.classList.remove("pop");
+  void card.offsetWidth;
+  card.classList.add("pop");
+  const img = $("randomImg");
+  const noImg = $("noImg");
+  const url = randomImageUrl();
+  if (url) {
+    img.src = url;
+    img.classList.remove("hidden");
+    noImg.classList.add("hidden");
+  } else {
+    img.classList.add("hidden");
+    noImg.classList.remove("hidden");
+  }
+  seen++;
+  $("counter").textContent = "seen: " + seen;
+}
+
+$("btnRandom").addEventListener("click", showRandom);
+
+function setView(v) {
+  if (v === "random") {
+    $("viewRandom").classList.remove("hidden");
+    $("viewScroll").classList.add("hidden");
+    $("tabRandom").classList.add("bg-white");
+    $("tabScroll").classList.remove("bg-white");
+  } else {
+    $("viewRandom").classList.add("hidden");
+    $("viewScroll").classList.remove("hidden");
+    $("tabScroll").classList.add("bg-white");
+    $("tabRandom").classList.remove("bg-white");
+    if (!$("feed").children.length) initFeed();
+  }
+}
+$("tabRandom").addEventListener("click", () => setView("random"));
+$("tabScroll").addEventListener("click", () => setView("scroll"));
+
+function makeCard(url) {
+  const div = document.createElement("div");
+  div.className = "card rounded-2xl bg-white/80 backdrop-blur border-4 border-white shadow-xl overflow-hidden";
+  const img = document.createElement("img");
+  img.src = url;
+  img.className = "w-full h-52 object-cover";
+  img.alt = "";
+  img.loading = "lazy";
+  div.appendChild(img);
+  return div;
+}
+
+function appendBatch(n) {
+  const feed = $("feed");
+  for (let i = 0; i < n && feed.children.length < MAX_FEED && ASSET_URLS.length; i++) {
+    const url = ASSET_URLS[feedIndex % ASSET_URLS.length];
+    feedIndex++;
+    feed.appendChild(makeCard(url));
+  }
+  if (!ASSET_URLS.length) {
+    $("feedEnd").textContent = "drop images into assets/ 📂";
+  } else if (feed.children.length >= MAX_FEED) {
+    $("feedEnd").textContent = "you reached the bottom of the void 🕳️";
+  }
+}
+
+function initFeed() { appendBatch(24); }
+
+window.addEventListener("scroll", () => {
+  if ($("viewScroll").classList.contains("hidden")) return;
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) appendBatch(12);
+});
+
+async function loadAssets() {
+  try {
+    const r = await fetch("assets/manifest.json");
+    if (r.ok) {
+      const j = await r.json();
+      if (Array.isArray(j)) {
+        ASSET_URLS.push(...j.map((f) => "assets/" + String(f).replace(/^\.?\//, "")));
+        return;
+      }
+    }
+  } catch {}
+  try {
+    const r = await fetch("assets/");
+    if (r.ok) {
+      const html = await r.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const links = [...doc.querySelectorAll("a")].map((a) => a.getAttribute("href")).filter(Boolean);
+      const imgs = links.filter((h) => /\.(png|jpe?g|gif|webp|svg|avif)$/i.test(h));
+      ASSET_URLS.push(...imgs.map((h) => (h.startsWith("http") ? h : "assets/" + h.replace(/^\.\//, ""))));
+      return;
+    }
+  } catch {}
+}
+
+// floating bubbles
+(function bubbles() {
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement("div");
+    b.className = "bubble";
+    const size = 20 + Math.random() * 60;
+    b.style.width = size + "px";
+    b.style.height = size + "px";
+    b.style.left = Math.random() * 100 + "vw";
+    b.style.animationDelay = Math.random() * 14 + "s";
+    b.style.animationDuration = (10 + Math.random() * 10) + "s";
+    document.body.appendChild(b);
+  }
+})();
+
+loadAssets().then(() => {
+  showRandom();
+});
+</script>
+</body>
+</html>
