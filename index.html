@@ -116,6 +116,12 @@ function showRandom() {
 
 $("btnRandom").addEventListener("click", showRandom);
 
+$("randomImg").style.cursor = "pointer";
+$("randomImg").addEventListener("click", () => {
+  const src = $("randomImg").src;
+  if (src) window.open(src, "_blank", "noopener");
+});
+
 function setView(v) {
   if (v === "random") {
     $("viewRandom").classList.remove("hidden");
