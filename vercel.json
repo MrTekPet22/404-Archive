@@ -1,0 +1,5 @@
+{
+  "buildCommand": "node refresh-assets.js",
+  "outputDirectory": ".",
+  "cleanUrls": true
+}
